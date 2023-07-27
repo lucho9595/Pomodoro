@@ -22,7 +22,7 @@
 
 In the project directory, you can run:
 
-## `git clone https://github.com/`
+## `git clone https://github.com/lucho9595/Pomodoro.git`
 
 ## BoilerPlate
 
