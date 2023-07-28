@@ -1,11 +1,10 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../db.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 async function getUsers(req, res) {
     try {
-        const usuarios = await prisma.user.findMany();
+        const usuarios = await prisma.usuarios.findMany();
         res.status(200).json(usuarios);
     } catch (error) {
         console.log(error);
@@ -16,7 +15,7 @@ async function getUsers(req, res) {
 async function getUser(req, res) {
     try {
         const { id } = req.params;
-        const usuario = await prisma.user.findUnique({
+        const usuario = await prisma.usuarios.findUnique({
             where: { id: parseInt(id) },
         });
         if (!usuario) {
@@ -32,7 +31,7 @@ async function getUser(req, res) {
 async function createUser(req, res) {
     try {
         const { username, email, password } = req.body;
-        const alreadyExistsMail = await prisma.user.findFirst({
+        const alreadyExistsMail = await prisma.usuarios.findFirst({
             where: { email: email },
         });
 
@@ -42,7 +41,7 @@ async function createUser(req, res) {
             return;
         };
 
-        const alreadyExistsUsername = await prisma.user.findFirst({
+        const alreadyExistsUsername = await prisma.usuarios.findFirst({
             where: { username: username },
         });
 
@@ -55,7 +54,7 @@ async function createUser(req, res) {
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        const nuevoUsuario = await prisma.user.create({
+        const nuevoUsuario = await prisma.usuarios.create({
             data: {
                 username: username,
                 email: email,
@@ -75,7 +74,7 @@ async function editUser(req, res) {
     try {
         const { id } = req.params;
         const { username, email, password } = req.body;
-        const usuario = await prisma.user.findUnique({
+        const usuario = await prisma.usuarios.findUnique({
             where: { id: parseInt(id) },
         });
 
@@ -83,7 +82,7 @@ async function editUser(req, res) {
             const salt = await bcrypt.genSalt(10);
             const cryptPassword = await bcrypt.hash(password, salt);
 
-            const updatedUser = await prisma.user.update({
+            const updatedUser = await prisma.usuarios.update({
                 where: { id: parseInt(id) },
                 data: {
                     username: username,
@@ -106,7 +105,7 @@ async function loginUser(req, res) {
     const { email, password } = req.body;
     try {
         // Verificar si el usuario existe en la base de datos
-        const usuario = await prisma.user.findUnique({
+        const usuario = await prisma.usuarios.findUnique({
             where: { email: email },
         });
 
@@ -133,12 +132,12 @@ async function loginUser(req, res) {
 async function deleteUser(req, res) {
     try {
         const { id } = req.params;
-        const usuario = await prisma.user.findUnique({
+        const usuario = await prisma.usuarios.findUnique({
             where: { id: parseInt(id) },
         });
 
         if (usuario) {
-            await prisma.user.delete({
+            await prisma.usuarios.delete({
                 where: { id: parseInt(id) },
             });
 

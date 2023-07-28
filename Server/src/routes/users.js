@@ -8,11 +8,11 @@ const { getUser,
     editUser } = require('../controller/userController.js');
 
 //USUARIOS
-router.get("/users", getUsers);
-router.get("/users/:id", getUser);
+router.get("/", getUsers);
+router.get("/:id", getUser);
 router.post("/login", loginUser);
 router.post("/register", createUser);
-router.put("/users/:id", editUser);
-router.delete("/users/:id", deleteUser);
+router.put("/:id", editUser);
+router.delete("/:id", deleteUser);
 
 module.exports = router;
