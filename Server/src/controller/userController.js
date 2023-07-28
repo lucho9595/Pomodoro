@@ -30,14 +30,14 @@ async function getUser(req, res) {
 
 async function createUser(req, res) {
     try {
-        const { username, email, password } = req.body;
+        const { username, email, password, role } = req.body;
         const alreadyExistsMail = await prisma.usuarios.findFirst({
             where: { email: email },
         });
 
         if (alreadyExistsMail) {
-            console.log('Email already registered');
-            res.status(400).send('Email already registered');
+            console.log('El email ya se encuentra registrado');
+            res.status(400).send('El email ya se encuentra registrado');
             return;
         };
 
@@ -46,10 +46,11 @@ async function createUser(req, res) {
         });
 
         if (alreadyExistsUsername) {
-            console.log('Username already registered');
-            res.status(400).send('Username already registered');
+            console.log('El nombre ya se encuentra registrado');
+            res.status(400).send('El nombre ya se encuentra registrado');
             return;
         };
+        
         // Aplicar bcrypt al hashear la contraseña
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -58,7 +59,8 @@ async function createUser(req, res) {
             data: {
                 username: username,
                 email: email,
-                password: hashedPassword, // Guardar la contraseña hasheada en lugar de la contraseña en texto plano
+                password: hashedPassword,
+                role: role || 'usuarios', // Valor predeterminado "usuarios" si no se especifica "role"
             },
         });
 
@@ -69,7 +71,6 @@ async function createUser(req, res) {
         res.status(400).json({ msg: 'No se pudo crear el usuario' });
     }
 };
-
 async function editUser(req, res) {
     try {
         const { id } = req.params;
